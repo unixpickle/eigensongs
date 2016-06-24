@@ -22,6 +22,11 @@ const (
 func SolveCompressor(sounds []wav.Sound, bigSize, smallSize int) (*Compressor, error) {
 	basisMat := linalg.NewMatrix(bigSize, smallSize)
 	tempMat := linalg.NewMatrix(bigSize, smallSize)
+
+	for i := range basisMat.Data {
+		basisMat.Data[i] = rand.NormFloat64()
+	}
+
 	for i := 0; i < stochasticIterations; i++ {
 		mat, err := stochasticNormalMatrix(sounds, bigSize, bigSize)
 		if err != nil {
