@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	stochasticIterations = 10
+	stochasticIterations = 1
 	powerIterations      = 10
+	sampleDataCount      = 1 << 22
 )
 
 // SolveCompressor computes an efficient compressor for
@@ -28,7 +29,7 @@ func SolveCompressor(sounds []wav.Sound, bigSize, smallSize int) (*Compressor, e
 	}
 
 	for i := 0; i < stochasticIterations; i++ {
-		mat, err := stochasticNormalMatrix(sounds, bigSize, bigSize)
+		mat, err := stochasticNormalMatrix(sounds, bigSize, sampleDataCount/bigSize)
 		if err != nil {
 			return nil, err
 		}
