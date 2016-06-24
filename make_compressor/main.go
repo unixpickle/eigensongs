@@ -20,7 +20,7 @@ const outputPerms = 0755
 func main() {
 	if len(os.Args) != 5 {
 		fmt.Fprintln(os.Stderr, "Usage: make_compressor <compressor out> <wav dir> "+
-			"[in dim] [out dim]")
+			"<in dim> <out dim>")
 		os.Exit(2)
 	}
 	outputFile := os.Args[1]
@@ -30,7 +30,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Invalid input dimension:", os.Args[3])
 		os.Exit(2)
 	}
-	outDim, err := strconv.Atoi(os.Args[3])
+	outDim, err := strconv.Atoi(os.Args[4])
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Invalid output dimension:", os.Args[3])
 		os.Exit(2)
