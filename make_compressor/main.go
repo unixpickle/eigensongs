@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -35,18 +36,21 @@ func main() {
 		os.Exit(2)
 	}
 
+	log.Println("Reading sounds...")
 	sounds, err := readSounds(wavDir)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
+	log.Println("Running PCA (this may take some time)...")
 	compressor, err := eigensongs.SolveCompressor(sounds, inDim, outDim)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to solve compressor:", err)
 		os.Exit(1)
 	}
 
+	log.Println("Saving...")
 	outData, err := serializer.SerializeWithType(compressor)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to serialize:", err)

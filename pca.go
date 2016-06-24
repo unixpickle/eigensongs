@@ -4,6 +4,8 @@ import (
 	"errors"
 	"math/rand"
 
+	"github.com/gonum/blas"
+	"github.com/gonum/blas/blas64"
 	"github.com/unixpickle/num-analysis/linalg"
 	"github.com/unixpickle/num-analysis/linalg/qrdecomp"
 	"github.com/unixpickle/wav"
@@ -19,14 +21,16 @@ const (
 // output vector sizes.
 func SolveCompressor(sounds []wav.Sound, bigSize, smallSize int) (*Compressor, error) {
 	basisMat := linalg.NewMatrix(bigSize, smallSize)
+	tempMat := linalg.NewMatrix(bigSize, smallSize)
 	for i := 0; i < stochasticIterations; i++ {
 		mat, err := stochasticNormalMatrix(sounds, bigSize, bigSize)
 		if err != nil {
 			return nil, err
 		}
 		for i := 0; i < powerIterations; i++ {
-			basisMat = mat.Mul(basisMat)
-			basisMat, _ = qrdecomp.Householder(basisMat)
+			blas64.Gemm(blas.NoTrans, blas.NoTrans, 1, blasMatrix(mat), blasMatrix(basisMat),
+				0, blasMatrix(tempMat))
+			basisMat, _ = qrdecomp.Householder(tempMat)
 		}
 	}
 	return &Compressor{
