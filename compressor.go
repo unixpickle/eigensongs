@@ -1,10 +1,15 @@
 package eigensongs
 
 import (
+	"encoding/json"
+
 	"github.com/gonum/blas"
 	"github.com/gonum/blas/blas64"
 	"github.com/unixpickle/num-analysis/linalg"
+	"github.com/unixpickle/serializer"
 )
+
+const compressorSerializerType = "github.com/unixpickle/eigensongs.Compressor"
 
 // A Compressor can compress large vectors (representing
 // sample data) into lower-dimensional vectors.
@@ -38,6 +43,16 @@ func (c *Compressor) Decompress(samples *linalg.Matrix) *linalg.Matrix {
 	return resMat
 }
 
+// Serialize encodes the Compressor as binary data.
+func (c *Compressor) Serialize() ([]byte, error) {
+	return json.Marshal(c.rowBasis)
+}
+
+// SerializerType returns serializer ID for Compressors.
+func (c *Compressor) SerializerType() string {
+	return compressorSerializerType
+}
+
 func blasMatrix(m *linalg.Matrix) blas64.General {
 	return blas64.General{
 		Rows:   m.Rows,
@@ -45,4 +60,15 @@ func blasMatrix(m *linalg.Matrix) blas64.General {
 		Stride: m.Cols,
 		Data:   m.Data,
 	}
+}
+
+func init() {
+	serializer.RegisterDeserializer(compressorSerializerType,
+		func(d []byte) (serializer.Serializer, error) {
+			var mat linalg.Matrix
+			if err := json.Unmarshal(d, &mat); err != nil {
+				return nil, err
+			}
+			return &Compressor{rowBasis: &mat}, nil
+		})
 }
