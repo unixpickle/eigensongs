@@ -1,3 +1,3 @@
 # eigensongs
 
-The goal of this project is to reduce the dimensionality of audio files, making it possible to run various machine learning algorithms on them.
+This is a Go package and a small set of tools for compressing PCM audio data using [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis). I plan to use it in recurrent neural networks that deal with audio data.
